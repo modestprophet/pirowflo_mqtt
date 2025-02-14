@@ -7,9 +7,12 @@ import threading
 import time
 import datetime
 import logging
+import json
+import paho.mqtt.client as mqtt
 from copy import deepcopy
 
 from . import waterrowerinterface
+from . import mqtt_settings
 
 logger = logging.getLogger(__name__)
 '''
@@ -58,6 +61,11 @@ class DataLogger(object):
         self.hoursWR = None
         self.elapsetime = None
         self.elapsetimeprevious = None
+
+        self.mqtt_client = mqtt.Client(mqtt_settings.mq_client_id, clean_session=True)
+        self.client.username_pw_set(mqtt_settings.mq_user, mqtt_settings.mq_password)
+        self.mqtt_client.connect(mqtt_settings.mq_server_url, keepalive=60)
+        self.last_mqtt_publish = time.time()
 
         self._reset_state()
 
@@ -208,6 +216,15 @@ class DataLogger(object):
 
     def SendToANT(self):
         self.ANTvalues = self.get_WRValues()
+    
+    def SendToMQTT(self):
+        current_time = time.time()
+        if current_time - self.last_mqtt_publish >= 1:  # Throttle to 1 message/sec
+            self.mqtt_client.publish(
+                "waterrower/data",
+                json.dumps(self.get_WRValues())
+            )
+            self.last_mqtt_publish = current_time
 
 def main(in_q, ble_out_q,ant_out_q):
     global ext_hr
@@ -216,7 +233,7 @@ def main(in_q, ble_out_q,ant_out_q):
     S4.open()
     S4.reset_request()
     WRtoBLEANT = DataLogger(S4)
-    logger.info("Waterrower Ready and sending data to BLE and ANT Thread")
+    logger.info("Waterrower Ready and sending data to BLE, ANT Thread, and MQTT")
     while True:
         if not in_q.empty():
             ResetRequest_ble = in_q.get()
@@ -235,6 +252,7 @@ def main(in_q, ble_out_q,ant_out_q):
             pass
         WRtoBLEANT.SendToBLE()
         WRtoBLEANT.SendToANT()
+        WRtoBLEANT.SendToMQTT()
         ble_out_q.append(WRtoBLEANT.BLEvalues)
         ant_out_q.append(WRtoBLEANT.ANTvalues) # here it is a class deque
         #print(type(ant_out_q))
