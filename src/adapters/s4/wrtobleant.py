@@ -62,8 +62,8 @@ class DataLogger(object):
         self.elapsetime = None
         self.elapsetimeprevious = None
 
-        self.mqtt_client = mqtt.Client(mqtt_settings.mq_client_id, clean_session=True)
-        self.client.username_pw_set(mqtt_settings.mq_user, mqtt_settings.mq_password)
+        self.mqtt_client = mqtt.Client(client_id=mqtt_settings.mq_client_id, clean_session=True)
+        self.mqtt_client.username_pw_set(mqtt_settings.mq_user, mqtt_settings.mq_password)
         self.mqtt_client.connect(mqtt_settings.mq_server_url, keepalive=60)
         self.last_mqtt_publish = time.time()
 
@@ -221,7 +221,7 @@ class DataLogger(object):
         current_time = time.time()
         if current_time - self.last_mqtt_publish >= 1:  # Throttle to 1 message/sec
             self.mqtt_client.publish(
-                "waterrower/data",
+                mqtt_settings.mq_topic,
                 json.dumps(self.get_WRValues())
             )
             self.last_mqtt_publish = current_time
