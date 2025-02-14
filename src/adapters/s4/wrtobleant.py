@@ -74,8 +74,9 @@ class DataLogger(object):
             self.mqtt_client.connect(mqtt_settings.mq_server_url, port=1883, keepalive=60)
             self.mqtt_client.loop_start()  # Start network loop
         except Exception as e:
-            logger.error(f"MQTT connection failed: {str(e)}")
-            
+            #logger.error
+            print(f"MQTT connection failed: {str(e)}")
+
         self.last_mqtt_publish = time.time()
 
         self._reset_state()
@@ -118,17 +119,21 @@ class DataLogger(object):
     
     def _on_mqtt_connect(self, client, userdata, flags, rc):
         if rc == 0:
-            logger.info("Connected to MQTT broker successfully")
+            #logger.info
+            print("Connected to MQTT broker successfully")
         else:
-            logger.error(f"MQTT connection failed with code: {rc}")
+            #logger.error
+            print(f"MQTT connection failed with code: {rc}")
 
     def _on_mqtt_disconnect(self, client, userdata, rc):
-        logger.warning(f"Disconnected from MQTT broker with code: {rc}")
+        # logger.warning
+        print(f"Disconnected from MQTT broker with code: {rc}")
         # Attempt to reconnect
         try:
             self.mqtt_client.reconnect()
         except Exception as e:
-            logger.error(f"Reconnection failed: {str(e)}")
+            #logger.error
+            print(f"Reconnection failed: {str(e)}")
 
     def on_rower_event(self, event):
         if event['type'] in IGNORE_LIST:
