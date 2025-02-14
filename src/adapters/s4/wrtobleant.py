@@ -64,7 +64,7 @@ class DataLogger(object):
 
         self.mqtt_client = mqtt.Client(client_id=mqtt_settings.mq_client_id, clean_session=True)
         self.mqtt_client.username_pw_set(mqtt_settings.mq_user, mqtt_settings.mq_password)
-        self.mqtt_client.connect(mqtt_settings.mq_server_url, port=1883, keepalive=60)
+        # self.mqtt_client.connect(mqtt_settings.mq_server_url, port=1883, keepalive=60)
 
         # Add connection callbacks for better debugging
         self.mqtt_client.on_connect = self._on_mqtt_connect
@@ -75,6 +75,7 @@ class DataLogger(object):
             self.mqtt_client.loop_start()  # Start network loop
         except Exception as e:
             logger.error(f"MQTT connection failed: {str(e)}")
+            
         self.last_mqtt_publish = time.time()
 
         self._reset_state()
