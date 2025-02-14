@@ -37,6 +37,11 @@ user=pi
 command=#PYTHON3# #REPO_DIR#/src/waterrowerthreads.py -i s4 -b
 autostart=false
 
+[program:pirowflo_S4_Monitor_only]
+user=pi
+command=#PYTHON3# #REPO_DIR#/src/waterrowerthreads.py -i s4
+autostart=false
+
 [program:pirowflo_S4_Monitor_AntPlus_only]
 user=pi
 command=#PYTHON3# #REPO_DIR#/src/waterrowerthreads.py -i s4 -a

@@ -1,5 +1,5 @@
 pyserial == 3.5
-# PyGObject == 3.38.0
+PyGObject
 dbus-python == 1.2.18
 pyusb == 1.2.0
 gatt == 0.2.7
