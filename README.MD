@@ -13,8 +13,8 @@ On a fresh install of RaspbianOS:
 ```bash
 sudo apt-get install git
 cd ~/
-git clone https://github.com/inonoob/pirowflo.git
-cd pirowflo
+git clone https://github.com/modestprophet/pirowflo_mqtt.git
+cd pirowflo_mqtt
 sudo chmod +x install.sh
 sudo ./install.sh
 ```
@@ -37,5 +37,11 @@ mq_device_name = "Waterrower data publisher"
 mq_user = os.environ.get("MQ_USER")
 mq_password = os.environ.get("MQ_PASSWORD")
 mq_topic = "waterrower/data"
+```
+
+
+In case of weirdness, might be worth modifying permissions of the project folder:
+```
+sudo chown -R pi:pi ~/pirowflo_mqtt
 ```
 
