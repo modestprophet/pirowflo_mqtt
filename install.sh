@@ -172,6 +172,13 @@ echo "----------------------------------------------"
 
 sed -i 's@#REPO_DIR#@'"$repo_dir"'@g' src/logging.conf
 
+echo "----------------------------------------------"
+echo " Add your MQTT secrets to .env file at        "
+echo " ~/pirowflo_mqtt/src/adapters/s4/.env         "
+echo "----------------------------------------------"
+
+cp src/adapters/s4/sample.env src/adapters/s4/.env
+
 echo " "
 echo "----------------------------------------------"
 echo " installation done ! rebooting in 3, 2, 1 "
