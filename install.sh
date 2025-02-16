@@ -44,7 +44,7 @@ echo " "
 
 python3 -m venv .venv
 source .venv/bin/activate
-sudo pip3 install -r requirements.txt
+pip3 install -r requirements.txt
 
 echo " "
 echo "-------------------------------------------------------"
@@ -75,7 +75,7 @@ done
 unset IFS
 
 echo "----------------------------------------------"
-echo " add user to the group bluetoot and dialout   "
+echo " add user to the group bluetooth and dialout  "
 echo "----------------------------------------------"
 
 
