@@ -31,7 +31,7 @@ echo "----------------------------------------------"
 echo "installed needed packages for python          "
 echo "----------------------------------------------"
 
-sudo apt-get install -y python3 python3-gi python3-gi-cairo gir1.2-gtk-3.0 python3-pip libatlas-base-dev libglib2.0-dev libgirepository1.0-dev libcairo2-dev zlib1g-dev libfreetype6-dev liblcms2-dev libopenjp2-7 libtiff6
+sudo apt-get install -y python3 python3-gi python3-gi-cairo gir1.2-gtk-3.0 python3-pip libatlas-base-dev libglib2.0-dev libgirepository1.0-dev libcairo2-dev zlib1g-dev libfreetype6-dev liblcms2-dev libopenjp2-7 libtiff6 supervisor
 
 echo " "
 
@@ -102,7 +102,8 @@ echo " "
 
 # generate supervisord.conf from supervisord.conf.orig with updated paths
 #
-export repo_dir=$(cd $(dirname $0) > /dev/null 2>&1; pwd -P)
+# export repo_dir=$(cd $(dirname $0) > /dev/null 2>&1; pwd -P)
+export repo_dir=$(cd "$(dirname -- "$0")" > /dev/null 2>&1 && pwd -P)
 export python3_path=$(which python3)
 export supervisord_path=$(which supervisord)
 export supervisorctl_path=$(which supervisorctl)

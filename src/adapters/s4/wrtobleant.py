@@ -251,6 +251,18 @@ class DataLogger(object):
             )
             self.last_mqtt_publish = current_time
 
+    # TODO: Consider adding a timestamp to the outgoing MQTT message    
+    # def SendToMQTT(self):
+    #     current_time = time.time()
+    #     if current_time - self.last_mqtt_publish >= 1:  # Throttle to 1 message/sec
+    #         payload = self.get_WRValues()
+    #         payload['timestamp'] = datetime.datetime.utcnow().isoformat() + "Z"
+    #         self.mqtt_client.publish(
+    #             mqtt_settings.mq_topic,
+    #             json.dumps(payload)
+    #         )
+    #         self.last_mqtt_publish = current_time
+
 def main(in_q, ble_out_q,ant_out_q):
     global ext_hr
     global ext_hr_time
