@@ -7,12 +7,10 @@ import threading
 import time
 import datetime
 import logging
-import json
-import paho.mqtt.client as mqtt
 from copy import deepcopy
 
 from . import waterrowerinterface
-from . import mqtt_client
+from .mqtt_client import MQTTClient
 
 logger = logging.getLogger(__name__)
 '''
@@ -255,7 +253,7 @@ def main(in_q, ble_out_q,ant_out_q):
     S4.open()
     S4.reset_request()
 
-    mqtt_client = mqtt_client.MQTTClient()
+    mqtt_client = MQTTClient()
     WRtoBLEANT = DataLogger(S4, mqtt_client=mqtt_client)
     logger.info("Waterrower Ready and sending data to BLE, ANT Thread, and MQTT")
     while True:
