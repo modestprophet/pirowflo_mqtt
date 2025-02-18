@@ -4,6 +4,7 @@
 # ---------------------------------------------------------------------------
 
 import threading
+import uuid
 import time
 import datetime
 import logging
@@ -38,6 +39,7 @@ class DataLogger(object):
         self._stop_event = threading.Event()
         self.mqtt_client = mqtt_client
         self.last_mqtt_publish = time.time()
+        self.workout_id = uuid.uuid4() 
 
         self._InstaPowerStroke = None
         self.maxpowerStroke = None
@@ -231,7 +233,11 @@ class DataLogger(object):
             
         current_time = time.time()
         if current_time - self.last_mqtt_publish >= 1:
-            self.mqtt_client.publish(self.get_WRValues())
+            payload = self.get_WRValues()
+            payload['timestamp'] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+            payload['workout_id'] = self.workout_id
+
+            self.mqtt_client.publish(payload)
             self.last_mqtt_publish = current_time
 
     # TODO: Consider adding a timestamp to the outgoing MQTT message    
