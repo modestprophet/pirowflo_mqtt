@@ -39,7 +39,7 @@ class DataLogger(object):
         self._stop_event = threading.Event()
         self.mqtt_client = mqtt_client
         self.last_mqtt_publish = time.time()
-        self.workout_id = uuid.uuid4() 
+        self.workout_id = str(uuid.uuid4()) 
 
         self._InstaPowerStroke = None
         self.maxpowerStroke = None
