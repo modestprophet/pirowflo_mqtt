@@ -87,7 +87,7 @@ class DataLogger(object):
                 'total_kcal_hour': 0,
                 'total_kcal_min': 0,
                 'heart_rate': 0,
-                'elapsedtime': 0.0,
+                'elapsedtime': 0,
             }
         self.WRValues = deepcopy(self.WRValues_rst)
         self.WRValues_standstill = deepcopy(self.WRValues_rst)
