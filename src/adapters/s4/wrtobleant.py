@@ -12,7 +12,7 @@ import paho.mqtt.client as mqtt
 from copy import deepcopy
 
 from . import waterrowerinterface
-from . import mqtt_settings
+from . import mqtt_client
 
 logger = logging.getLogger(__name__)
 '''
@@ -32,12 +32,14 @@ ext_hr = 0
 ext_hr_time = -1
 
 class DataLogger(object):
-    def __init__(self, rower_interface):
+    def __init__(self, rower_interface, mqtt_client=None):
         self._rower_interface = rower_interface
         self._rower_interface.register_callback(self.reset_requested)
         self._rower_interface.register_callback(self.pulse)
         self._rower_interface.register_callback(self.on_rower_event)
         self._stop_event = threading.Event()
+        self.mqtt_client = mqtt_client
+        self.last_mqtt_publish = time.time()
 
         self._InstaPowerStroke = None
         self.maxpowerStroke = None
@@ -61,23 +63,6 @@ class DataLogger(object):
         self.hoursWR = None
         self.elapsetime = None
         self.elapsetimeprevious = None
-
-        self.mqtt_client = mqtt.Client(client_id=mqtt_settings.mq_client_id, clean_session=True)
-        self.mqtt_client.username_pw_set(mqtt_settings.mq_user, mqtt_settings.mq_password)
-        # self.mqtt_client.connect(mqtt_settings.mq_server_url, port=1883, keepalive=60)
-
-        # Add connection callbacks for better debugging
-        self.mqtt_client.on_connect = self._on_mqtt_connect
-        self.mqtt_client.on_disconnect = self._on_mqtt_disconnect
-        
-        try:
-            self.mqtt_client.connect(mqtt_settings.mq_server_url, port=1883, keepalive=60)
-            self.mqtt_client.loop_start()  # Start network loop
-        except Exception as e:
-            logger.error(f"MQTT connection failed: {str(e)}")
-
-        self.last_mqtt_publish = time.time()
-
         self._reset_state()
 
     def _reset_state(self):
@@ -243,12 +228,12 @@ class DataLogger(object):
         self.ANTvalues = self.get_WRValues()
     
     def SendToMQTT(self):
+        if self.mqtt_client is None:
+            return
+            
         current_time = time.time()
-        if current_time - self.last_mqtt_publish >= 1:  # Throttle to 1 message/sec
-            self.mqtt_client.publish(
-                mqtt_settings.mq_topic,
-                json.dumps(self.get_WRValues())
-            )
+        if current_time - self.last_mqtt_publish >= 1:
+            self.mqtt_client.publish(self.get_WRValues())
             self.last_mqtt_publish = current_time
 
     # TODO: Consider adding a timestamp to the outgoing MQTT message    
@@ -269,7 +254,9 @@ def main(in_q, ble_out_q,ant_out_q):
     S4 = waterrowerinterface.Rower()
     S4.open()
     S4.reset_request()
-    WRtoBLEANT = DataLogger(S4)
+
+    mqtt_client = mqtt_client.MQTTClient()
+    WRtoBLEANT = DataLogger(S4, mqtt_client=mqtt_client)
     logger.info("Waterrower Ready and sending data to BLE, ANT Thread, and MQTT")
     while True:
         if not in_q.empty():
